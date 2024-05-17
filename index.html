@@ -90,17 +90,15 @@
       // let mediaRecorder;
 
       function startPlay() {
-        var constraints = {
-          audio: false,
-          video: {
-            // width: { min: 720, max: 3840 },
-            // height: { min: 1080, max: 2160 },
-            facingMode: "user",
-          },
-        };
-
         navigator.mediaDevices
-          .getUserMedia(constraints)
+          .getUserMedia({
+            audio: false,
+            video: {
+              // width: { min: 720, max: 3840 },
+              // height: { min: 1080, max: 2160 },
+              facingMode: "user",
+            },
+          })
           .then(function (mediaStream) {
             var video = document.querySelector("video");
             video.style.display = "block";
@@ -142,8 +140,8 @@
           .getUserMedia({
             audio: false,
             video: {
-              width: { min: 720, max: 3840 },
-              height: { min: 1080, max: 2160 },
+              //   width: { min: 720, max: 3840 },
+              //   height: { min: 1080, max: 2160 },
               facingMode: "user",
             },
           })
