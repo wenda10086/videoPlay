@@ -12,120 +12,208 @@
     <video></video>
     <button id="start">开始</button>
     <button id="end">结束</button>
-
-    <button id="start2">开始2</button>
-    <button id="end2">结束2</button>
     <script>
-      // 用于存放 MediaRecorder 对象和音频Track，关闭录制和关闭媒体设备需要用到
-      var recorder, mediaStream;
+      //   var MediaUtils = {
+      //     /**
+      //      * 获取用户媒体设备(处理兼容的问题)
+      //      * @param videoEnable {boolean} - 是否启用摄像头
+      //      * @param audioEnable {boolean} - 是否启用麦克风
+      //      * @param callback {Function} - 处理回调
+      //      */
+      //     getUserMedia: function (videoEnable, audioEnable, callback) {
+      //       navigator.getUserMedia =
+      //         navigator.getUserMedia ||
+      //         navigator.webkitGetUserMedia ||
+      //         navigator.mozGetUserMedia ||
+      //         navigator.msGetUserMedia ||
+      //         window.getUserMedia;
+      //       var constraints = { video: videoEnable, audio: audioEnable };
+      //       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      //         navigator.mediaDevices
+      //           .getUserMedia(constraints)
+      //           .then(function (stream) {
+      //             callback(false, stream);
+      //           })
+      //           ["catch"](function (err) {
+      //             callback(err);
+      //           });
+      //       } else if (navigator.getUserMedia) {
+      //         navigator.getUserMedia(
+      //           constraints,
+      //           function (stream) {
+      //             callback(false, stream);
+      //           },
+      //           function (err) {
+      //             callback(err);
+      //           }
+      //         );
+      //       } else {
+      //         callback(new Error("Not support userMedia"));
+      //       }
+      //     },
 
-      // 用于存放录制后的音频文件对象和录制结束回调
-      var recorderFile, stopRecordCallback;
+      //     /**
+      //      * 关闭媒体流
+      //      * @param stream {MediaStream} - 需要关闭的流
+      //      */
+      //     closeStream: function (stream) {
+      //       if (typeof stream.stop === "function") {
+      //         stream.stop();
+      //       } else {
+      //         let trackList = [stream.getAudioTracks(), stream.getVideoTracks()];
 
-      // 用于存放是否开启了视频录制
-      var videoEnabled = false;
+      //         for (let i = 0; i < trackList.length; i++) {
+      //           let tracks = trackList[i];
+      //           if (tracks && tracks.length > 0) {
+      //             for (let j = 0; j < tracks.length; j++) {
+      //               let track = tracks[j];
+      //               if (typeof track.stop === "function") {
+      //                 track.stop();
+      //               }
+      //             }
+      //           }
+      //         }
+      //       }
+      //     },
+      //   };
+      //   // 用于存放 MediaRecorder 对象和音频Track，关闭录制和关闭媒体设备需要用到
+      //   var recorder, mediaStream;
 
-      // 录制短语音
-      function startRecord(stream) {
-        // 通过 MediaRecorder 记录获取到的媒体流
-        recorder = new MediaRecorder(stream);
-        mediaStream = stream;
-        var chunks = [],
-          startTime = 0;
-        recorder.ondataavailable = function (e) {
-          chunks.push(e.data);
-        };
-        recorder.onstop = function (e) {
-          console.log("stop", e);
-          recorderFile = new Blob(chunks, { type: recorder.mimeType });
-          chunks = [];
-          if (null != stopRecordCallback) {
-            stopRecordCallback();
-          }
-        };
-        recorder.onerror = function (e) {
-          console.error("onerror");
-          console.error(e);
-        };
-        recorder.start(500);
-      }
+      //   // 用于存放录制后的音频文件对象和录制结束回调
+      //   var recorderFile, stopRecordCallback;
 
-      // 停止录制
-      function stopRecord(callback) {
-        stopRecordCallback = callback;
-        // 终止录制器
-        recorder.stop();
-        // 关闭媒体流
-        mediaStream.getTracks().forEach(function (track) {
-          track.stop();
-        });
-      }
+      //   // 用于存放是否开启了视频录制
+      //   var videoEnabled = false;
 
-      // 播放录制的音频
-      function playRecord() {
-        console.log(recorderFile);
-        var url = URL.createObjectURL(recorderFile);
-        var dom = document.createElement(videoEnabled ? "video" : "audio");
-        dom.autoplay = true;
-        dom.src = url;
-        if (videoEnabled) {
-          dom.width = 640;
-          dom.height = 480;
-          dom.style.zIndex = "9999999";
-          dom.style.position = "fixed";
-          dom.style.left = "0";
-          dom.style.right = "0";
-          dom.style.top = "0";
-          dom.style.bottom = "0";
-          dom.style.margin = "auto";
-          document.body.appendChild(dom);
-        }
-      }
+      //   // 录制短语音
+      //   function startRecord(enableVideo) {
+      //     videoEnabled = enableVideo;
+      //     MediaUtils.getUserMedia(enableVideo, true, function (err, stream) {
+      //       if (err) {
+      //         throw err;
+      //       } else {
+      //         // 通过 MediaRecorder 记录获取到的媒体流
+      //         recorder = new MediaRecorder(stream);
+      //         mediaStream = stream;
+      //         var chunks = [],
+      //           startTime = 0;
+      //         recorder.ondataavailable = function (e) {
+      //           chunks.push(e.data);
+      //         };
+      //         recorder.onstop = function (e) {
+      //           recorderFile = new Blob(chunks, { type: recorder.mimeType });
+      //           chunks = [];
+      //           if (null != stopRecordCallback) {
+      //             stopRecordCallback();
+      //           }
+      //         };
+      //         recorder.start();
+      //       }
+      //     });
+      //   }
+
+      //   // 停止录制
+      //   function stopRecord(callback) {
+      //     stopRecordCallback = callback;
+      //     // 终止录制器
+      //     recorder.stop();
+      //     // 关闭媒体流
+      //     MediaUtils.closeStream(mediaStream);
+      //   }
+
+      //   // 播放录制的音频
+      //   function playRecord() {
+      //     console.log(recorderFile);
+      //     var url = URL.createObjectURL(recorderFile);
+      //     var dom = document.createElement(videoEnabled ? "video" : "audio");
+      //     dom.autoplay = true;
+      //     dom.src = url;
+      //     if (videoEnabled) {
+      //       dom.width = 640;
+      //       dom.height = 480;
+      //       dom.style.zIndex = "9999999";
+      //       dom.style.position = "fixed";
+      //       dom.style.left = "0";
+      //       dom.style.right = "0";
+      //       dom.style.top = "0";
+      //       dom.style.bottom = "0";
+      //       dom.style.margin = "auto";
+      //       document.body.appendChild(dom);
+      //     }
+      //   }
 
       // 启动录制视频 (若需要录制音频参数指定为 false 即可)
 
       new VConsole();
 
-      // let stream;
-      // let mediaRecorder;
+      let stream;
+      let mediaRecorder;
 
       function startPlay() {
-        var constraints = {
-          audio: false,
-          video: {
-            width: { min: 720, max: 3840 },
-            height: { min: 1080, max: 2160 },
-            facingMode: "user",
-          },
-        };
+        // var constraints = { audio: true, video: { width: 1280, height: 720 } };
+
+        // navigator.mediaDevices.getUserMedia(constraints)
+        //     .then(function (mediaStream) {
+        //         var video = document.querySelector('video');
+        //         video.style.display='block'
+        //         video.srcObject = mediaStream;
+        //         video.onloadedmetadata = function (e) {
+        //             video.play();
+        //         };
+        //     })
+        //     .catch(function (err) { console.log(err.name + ": " + err.message); });
+        // startRecord(true);
 
         navigator.mediaDevices
-          .getUserMedia(constraints)
-          .then(function (mediaStream) {
-            // var video = document.querySelector("video");
-            // video.style.display = "block";
-            // video.style.width = "300px";
-            // video.style.height = "300px";
-            // video.srcObject = mediaStream;
-            // video.onloadedmetadata = function (e) {
-            //   video.play();
-            // };
-            startRecord(mediaStream);
+          .getUserMedia({
+            audio: false,
+            video: {
+              // width: { min: 720, max: 3840 },
+              // height: { min: 1080, max: 2160 },
+              facingMode: "user",
+            },
+          })
+          .then(function (s) {
+            stream = s;
+            mediaRecorder = new MediaRecorder(s);
+
+            const chunks = [];
+            mediaRecorder.ondataavailable = function (e) {
+              chunks.push(e.data);
+            };
+            mediaRecorder.onstop = function () {
+              console.log("onstop", chunks);
+            };
+            mediaRecorder.onerror = function (e) {
+              console.error("onerror");
+              console.error(e);
+            };
+            mediaRecorder.start(500); // 每秒发送一次数据
           })
           .catch(function (err) {
-            console.log(err.name + ": " + err.message);
+            console.log("startRecord error");
+            console.log(err);
           });
       }
 
       function stopPlay() {
-        var video = document.querySelector("video");
-        if (video) {
-          video.style.display = "none";
+        // var video = document.querySelector("video");
+        // video.style.display = "none";
+        // stopRecord(function () {
+        //   // 播放
+        //   playRecord();
+        // });
+
+        if (mediaRecorder) {
+          mediaRecorder.stop();
         }
-        stopRecord(function () {
-          // 播放
-          playRecord();
-        });
+        if (stream) {
+          stream.getTracks().forEach((track) => {
+            track.stop();
+          });
+        }
+        mediaRecorder = null;
+        stream = null;
       }
 
       document.querySelector("#start").onclick = () => {
@@ -133,53 +221,6 @@
       };
       document.querySelector("#end").onclick = () => {
         stopPlay();
-      };
-
-      let stream2;
-      let mediaRecorder2;
-      document.querySelector("#start2").onclick = () => {
-        navigator.mediaDevices
-          .getUserMedia({
-            audio: false,
-            video: {
-              width: { min: 720, max: 3840 },
-              height: { min: 1080, max: 2160 },
-              facingMode: "user",
-            },
-          })
-          .then(function (s) {
-            stream2 = s;
-            mediaRecorder2 = new MediaRecorder(s);
-
-            const chunks = [];
-            mediaRecorder2.ondataavailable = function (e) {
-              chunks.push(e.data);
-            };
-            mediaRecorder2.onstop = function () {
-              console.log("onstop", chunks);
-            };
-            mediaRecorder2.onerror = function (e) {
-              console.error("onerror");
-              console.error(e);
-            };
-            mediaRecorder2.start(500); // 每秒发送一次数据
-          })
-          .catch(function (err) {
-            console.log("startRecord error");
-            console.log(err);
-          });
-      };
-      document.querySelector("#end2").onclick = () => {
-        if (mediaRecorder2) {
-          mediaRecorder2.stop();
-        }
-        if (stream2) {
-          stream2.getTracks().forEach((track) => {
-            track.stop();
-          });
-        }
-        mediaRecorder2 = null;
-        stream2 = null;
       };
     </script>
   </body>
