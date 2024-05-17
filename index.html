@@ -186,14 +186,14 @@
         navigator.mediaDevices
           .getUserMedia(constraints)
           .then(function (mediaStream) {
-            var video = document.querySelector("video");
-            video.style.display = "block";
-            video.style.width = "300px";
-            video.style.height = "300px";
-            video.srcObject = mediaStream;
-            video.onloadedmetadata = function (e) {
-              video.play();
-            };
+            // var video = document.querySelector("video");
+            // video.style.display = "block";
+            // video.style.width = "300px";
+            // video.style.height = "300px";
+            // video.srcObject = mediaStream;
+            // video.onloadedmetadata = function (e) {
+            //   video.play();
+            // };
             startRecord(mediaStream);
           })
           .catch(function (err) {
