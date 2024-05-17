@@ -188,6 +188,8 @@
           .then(function (mediaStream) {
             var video = document.querySelector("video");
             video.style.display = "block";
+            video.style.width = "300px";
+            video.style.height = "300px";
             video.srcObject = mediaStream;
             video.onloadedmetadata = function (e) {
               video.play();
@@ -232,7 +234,9 @@
 
       function stopPlay() {
         var video = document.querySelector("video");
-        video.style.display = "none";
+        if (video) {
+          video.style.display = "none";
+        }
         stopRecord(function () {
           // 播放
           playRecord();
