@@ -10,12 +10,42 @@
 
   <body>
     <video></video>
+    width最小：<input value="720" id="widthMin" onchange="updateOptions()" />
+    width最大：<input value="3840" id="widthMax" onchange="updateOptions()" />
+    height最小：<input value="1080" onchange="updateOptions()" id="heightMin" />
+    height最大：<input value="2160" id="heightMax" onchange="updateOptions()" />
     <button id="start">开始</button>
     <button id="end">结束</button>
 
     <button id="start2">开始2</button>
     <button id="end2">结束2</button>
     <script>
+      const options = {
+        audio: false,
+        video: {
+          width: { min: 720, max: 3840 },
+          height: { min: 1080, max: 2160 },
+          facingMode: "user",
+        },
+      };
+
+      // 修改
+      function updateOptions() {
+        options.video.width.min = Number(
+          document.querySelector("#widthMin").value
+        );
+        options.video.width.max = Number(
+          document.querySelector("#widthMax").value
+        );
+        options.video.height.min = Number(
+          document.querySelector("#heightMin").value
+        );
+        options.video.height.max = Number(
+          document.querySelector("#heightMax").value
+        );
+        console.log("change options", options);
+      }
+
       // 用于存放 MediaRecorder 对象和音频Track，关闭录制和关闭媒体设备需要用到
       var recorder, mediaStream;
 
@@ -90,15 +120,9 @@
       // let mediaRecorder;
 
       function startPlay() {
+        console.log("get options", options);
         navigator.mediaDevices
-          .getUserMedia({
-            audio: false,
-            video: {
-              width: { min: 720, max: 3840 },
-              height: { min: 1080, max: 2160 },
-              facingMode: "user",
-            },
-          })
+          .getUserMedia(options)
           .then(function (mediaStream) {
             var video = document.querySelector("video");
             video.style.display = "block";
@@ -137,14 +161,7 @@
       let mediaRecorder2;
       document.querySelector("#start2").onclick = () => {
         navigator.mediaDevices
-          .getUserMedia({
-            audio: false,
-            video: {
-              width: { min: 720, max: 3840 },
-              height: { min: 1080, max: 2160 },
-              facingMode: "user",
-            },
-          })
+          .getUserMedia(options)
           .then(function (s) {
             stream2 = s;
             mediaRecorder2 = new MediaRecorder(s);
